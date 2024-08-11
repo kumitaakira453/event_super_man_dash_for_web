@@ -25,6 +25,37 @@ CHECK_POINTS = [
 JUMP_VELOCITY = -3
 
 
+# ============================================================================
+# mobileのために追記する
+def custom_btn(key):
+    """
+    custom_btnをmobileにも対応するように編集
+    左ボタン：左に進む
+    右ボタン：右に進む
+    """
+    if key == pyxel.KEY_LEFT:
+        return pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_LEFT) or pyxel.btn(pyxel.KEY_LEFT)
+    elif key == pyxel.KEY_RIGHT:
+        return pyxel.btn(pyxel.GAMEPAD1_BUTTON_DPAD_RIGHT) or pyxel.btn(pyxel.KEY_RIGHT)
+    else:
+        return pyxel.btn(key)
+
+
+def custom_btnp(key):
+    """
+    custom_btnpをmobileにも対応するように編集
+    Aボタン(下)：ゲーム開始・ジャンプ
+    Yボタン(上)：タイトル画面に戻る
+    """
+    if key == pyxel.KEY_SPACE:
+        return pyxel.btnp(pyxel.GAMEPAD1_BUTTON_A) or pyxel.btnp(pyxel.KEY_SPACE)
+    elif key == pyxel.KEY_R:
+        return pyxel.btnp(pyxel.GAMEPAD1_BUTTON_Y) or pyxel.btnp(pyxel.KEY_R)
+    else:
+        return pyxel.btnp(key)
+
+
+# ============================================================================
 def get_tile(x, y):
     return pyxel.tilemap(0).pget(x, y)
 
@@ -59,10 +90,10 @@ class Boy:
         # self.check_enemy_collision(enemy)
         coll_flags = detect_collision(self.x, self.y)
 
-        if pyxel.btn(pyxel.KEY_LEFT) and self.x > scroll_x and not (coll_flags[7]):
+        if custom_btn(pyxel.KEY_LEFT) and self.x > scroll_x and not (coll_flags[7]):
             self.x -= 2
         if (
-            pyxel.btn(pyxel.KEY_RIGHT)
+            custom_btn(pyxel.KEY_RIGHT)
             and self.x < scroll_x + WIDTH - self.w
             and not (coll_flags[5])
         ):
@@ -111,7 +142,7 @@ class Boy:
         else:
             self.y += self.v_y
         # 地面についている時だけjump可能にする
-        if pyxel.btnp(pyxel.KEY_SPACE) and (coll_flags[2] or coll_flags[3]):
+        if custom_btnp(pyxel.KEY_SPACE) and (coll_flags[2] or coll_flags[3]):
             self.v_y = JUMP_VELOCITY
             self.jump_status = 1
 
@@ -260,7 +291,7 @@ class App:
         pyxel.run(self.update, self.draw)
 
     def update_title_scene(self):
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        if custom_btnp(pyxel.KEY_SPACE):
             self.scene = SCENE_GAME
             pyxel.play(0, [0, 1], loop=True)
             self.game_settings()
@@ -286,11 +317,11 @@ class App:
             pyxel.play(1, 5)
 
     def update_result(self):
-        if pyxel.btnp(pyxel.KEY_SPACE):
+        if custom_btnp(pyxel.KEY_SPACE):
             self.scene = SCENE_GAME
             pyxel.play(0, [0, 1], loop=True)
             self.game_settings()
-        elif pyxel.btnp(pyxel.KEY_R):
+        elif custom_btnp(pyxel.KEY_R):
             self.scene = SCENE_TITLE
 
     def update(self):
